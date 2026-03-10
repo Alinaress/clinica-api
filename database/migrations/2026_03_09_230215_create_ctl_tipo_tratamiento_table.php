@@ -10,12 +10,15 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
-        Schema::create('ctl_tipo_tratamiento', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
-    }
+{
+    Schema::create('ctl_tipo_tratamiento', function (Blueprint $table) {
+        $table->id();
+        $table->string('nombre', 100);
+        $table->text('descripcion')->nullable();
+        $table->boolean('estado')->default(true);
+        $table->timestamps();
+    });
+}
 
     /**
      * Reverse the migrations.
