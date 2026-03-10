@@ -46,5 +46,20 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('tipo-tratamientos', CtlTipoTratamientoController::class);
         Route::apiResource('estado-citas',      CtlEstadoCitaController::class);
         Route::apiResource('medicamentos',      CtlMedicamentoController::class);
-    });
+    }); // <-- cierre catalogos
+
+    // Mantenimiento
+    Route::apiResource('pacientes',    MntPacienteController::class);
+    Route::apiResource('doctores',     MntDoctorController::class);
+    Route::apiResource('direcciones',  MntDireccionController::class);
+    Route::apiResource('contactos',    MntContactoController::class);
+    Route::apiResource('expedientes',  MntExpedienteController::class);
+    Route::apiResource('citas',        MntCitaController::class);
+    Route::apiResource('recetas',      MntRecetaController::class);
+    Route::apiResource('diagnosticos', MntDiagnosticoController::class);
+
+    // Notificaciones
+Route::apiResource('notificaciones', MntNotificacionController::class);
+Route::post('notificaciones/leer-todas', [MntNotificacionController::class, 'marcarTodasLeidas']);
+
 });
