@@ -28,6 +28,10 @@ Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
 });
 
+//regiatro de pacientes
+
+Route::post('/registro', [MntPacienteController::class, 'registro']);
+
 // ===== RUTAS PROTEGIDAS =====
 Route::middleware('auth:sanctum')->group(function () {
 
