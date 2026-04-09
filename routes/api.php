@@ -28,6 +28,10 @@ Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
 });
 
+//regiatro de pacientes
+
+Route::post('/registro', [MntPacienteController::class, 'registro']);
+
 // ===== RUTAS PROTEGIDAS =====
 Route::middleware('auth:sanctum')->group(function () {
 
@@ -37,8 +41,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/me',      [AuthController::class, 'me']);
     });
 
-    // Catálogos
-    Route::prefix('catalogos')->group(function () {
+    // Catálogos — solo admin
+    Route::middleware('rol:admin')->prefix('catalogos')->group(function () {
         Route::apiResource('generos',           CtlGeneroController::class);
         Route::apiResource('grupos-sanguineos', CtlGrupoSanguineoController::class);
         Route::apiResource('especialidades',    CtlEspecialidadController::class);
@@ -46,20 +50,28 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('tipo-tratamientos', CtlTipoTratamientoController::class);
         Route::apiResource('estado-citas',      CtlEstadoCitaController::class);
         Route::apiResource('medicamentos',      CtlMedicamentoController::class);
-    }); // <-- cierre catalogos
+    });
 
-    // Mantenimiento
-    Route::apiResource('pacientes',    MntPacienteController::class);
-    Route::apiResource('doctores',     MntDoctorController::class);
-    Route::apiResource('direcciones',  MntDireccionController::class);
-    Route::apiResource('contactos',    MntContactoController::class);
-    Route::apiResource('expedientes',  MntExpedienteController::class);
-    Route::apiResource('citas',        MntCitaController::class);
-    Route::apiResource('recetas',      MntRecetaController::class);
-    Route::apiResource('diagnosticos', MntDiagnosticoController::class);
+    // Pacientes — admin y recepcionista
+    Route::middleware('rol:admin,recepcionista')->group(function () {
+        Route::apiResource('pacientes',   MntPacienteController::class);
+        Route::apiResource('direcciones', MntDireccionController::class);
+        Route::apiResource('contactos',   MntContactoController::class);
+    });
 
-    // Notificaciones
-Route::apiResource('notificaciones', MntNotificacionController::class);
-Route::post('notificaciones/leer-todas', [MntNotificacionController::class, 'marcarTodasLeidas']);
+    // Citas — admin, recepcionista y doctor
+    Route::middleware('rol:admin,recepcionista,doctor')->group(function () {
+        Route::apiResource('citas',        MntCitaController::class);
+        Route::apiResource('notificaciones', MntNotificacionController::class);
+        Route::post('notificaciones/leer-todas', [MntNotificacionController::class, 'marcarTodasLeidas']);
+    });
+
+    // Expedientes, recetas y diagnósticos — admin y doctor
+    Route::middleware('rol:admin,doctor')->group(function () {
+        Route::apiResource('doctores',     MntDoctorController::class);
+        Route::apiResource('expedientes',  MntExpedienteController::class);
+        Route::apiResource('recetas',      MntRecetaController::class);
+        Route::apiResource('diagnosticos', MntDiagnosticoController::class);
+    });
 
 });

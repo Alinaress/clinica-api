@@ -3,6 +3,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\MntCita;
+use App\Mail\CitaAgendada;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 
 class MntCitaController extends Controller
@@ -38,6 +40,11 @@ class MntCitaController extends Controller
             'notas'              => $request->notas,
             'id_usuario_creacion' => request()->user()->id,
         ]);
+
+        $cita->load(['paciente', 'doctor', 'estadoCita']);
+
+        $email = $cita->paciente->usuario->email;
+        Mail::to($email)->send(new CitaAgendada($cita));
 
         return response()->json(['message' => 'Cita creada correctamente', 'data' => $cita->load(['paciente', 'doctor', 'estadoCita'])], 201);
     }
