@@ -4,7 +4,6 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-
 class UserSeeder extends Seeder
 {
     public function run(): void
@@ -14,7 +13,7 @@ class UserSeeder extends Seeder
             [
                 'nickname' => 'admin',
                 'password' => Hash::make('password123'),
-                'id_rol'   => 1,
+                'id_rol' => 1,
             ]
         );
     }
