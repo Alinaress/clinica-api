@@ -15,19 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'rol' => \App\Http\Middleware\CheckRol::class,
         ]);
-<<<<<<< HEAD
-
-        $middleware->validateCsrfTokens(except: ['api/*']);
-
-        $middleware->append(\Illuminate\Http\Middleware\HandleCors::class);
-    })
-    ->withExceptions(function (Exceptions $exceptions): void {
-        //
-    })->create();
-=======
     })
 
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();
->>>>>>> 8bcfe1100982fd23d86401d66508f10b9ce21b45
