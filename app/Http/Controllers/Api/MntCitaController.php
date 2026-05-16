@@ -6,6 +6,7 @@ use App\Models\MntCita;
 use App\Mail\CitaAgendada;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class MntCitaController extends Controller
 {
@@ -30,14 +31,36 @@ class MntCitaController extends Controller
             'notas'          => 'nullable|string',
         ]);
 
+        // Validar que el doctor no tenga otra cita en ese horario
+        $duracion = $request->duracion_min ?? 30;
+        $fechaInicio = Carbon::parse($request->fecha_hora);
+        $fechaFin = $fechaInicio->copy()->addMinutes($duracion);
+
+        $citaExistente = MntCita::where('id_doctor', $request->id_doctor)
+            ->whereNotIn('id_estado_cita', [5]) // excluir canceladas
+            ->where(function ($query) use ($fechaInicio, $fechaFin) {
+                $query->whereBetween('fecha_hora', [$fechaInicio, $fechaFin])
+                      ->orWhereRaw("fecha_hora + (duracion_min || ' minutes')::interval > ?", [$fechaInicio]);
+            })
+            ->exists();
+
+        if ($citaExistente) {
+            return response()->json([
+                'message' => 'El doctor ya tiene una cita agendada en ese horario.',
+                'errors'  => [
+                    'fecha_hora' => ['El doctor no está disponible en ese horario.']
+                ]
+            ], 422);
+        }
+
         $cita = MntCita::create([
-            'id_paciente'        => $request->id_paciente,
-            'id_doctor'          => $request->id_doctor,
-            'id_estado_cita'     => $request->id_estado_cita ?? 1,
-            'fecha_hora'         => $request->fecha_hora,
-            'duracion_min'       => $request->duracion_min ?? 30,
-            'motivo'             => $request->motivo,
-            'notas'              => $request->notas,
+            'id_paciente'         => $request->id_paciente,
+            'id_doctor'           => $request->id_doctor,
+            'id_estado_cita'      => $request->id_estado_cita ?? 1,
+            'fecha_hora'          => $request->fecha_hora,
+            'duracion_min'        => $duracion,
+            'motivo'              => $request->motivo,
+            'notas'               => $request->notas,
             'id_usuario_creacion' => request()->user()->id,
         ]);
 
@@ -46,7 +69,15 @@ class MntCitaController extends Controller
         $email = $cita->paciente->usuario->email;
         Mail::to($email)->send(new CitaAgendada($cita));
 
-        return response()->json(['message' => 'Cita creada correctamente', 'data' => $cita->load(['paciente', 'doctor', 'estadoCita'])], 201);
+        $cita->load(['paciente', 'doctor', 'estadoCita']);
+
+        $email = $cita->paciente->usuario->email;
+        Mail::to($email)->send(new CitaAgendada($cita));
+
+        return response()->json([
+            'message' => 'Cita creada correctamente',
+            'data'    => $cita
+        ], 201);
     }
 
     public function show($id)
