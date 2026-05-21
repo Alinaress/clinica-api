@@ -18,7 +18,18 @@ class DoctorSeeder extends Seeder
                 'foto'            => null,
                 'estado'          => true,
                 'id_usuario'      => 1,
-            ]
-        );
+        ]);
     }
 }
+        MntDoctor::updateOrCreate(
+            ['num_registro' => 'MED-001'],
+            [
+                'nombre'          => 'Carlos',
+                'apellido'        => 'Martínez',
+                'id_especialidad' => 1,
+                'foto'            => null,
+                'estado'          => true,
+                'id_usuario'      => 1,
+            ]
+        );
+
