@@ -69,11 +69,6 @@ class MntCitaController extends Controller
         $email = $cita->paciente->usuario->email;
         Mail::to($email)->send(new CitaAgendada($cita));
 
-        $cita->load(['paciente', 'doctor', 'estadoCita']);
-
-        $email = $cita->paciente->usuario->email;
-        Mail::to($email)->send(new CitaAgendada($cita));
-
         return response()->json([
             'message' => 'Cita creada correctamente',
             'data'    => $cita

@@ -10,14 +10,15 @@ class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
-    
+
     public function run(): void
-{
-    $this->call([
-        RolSeeder::class,
-        UserSeeder::class,
-        DoctorSeeder::class,
-        PacienteSeeder::class,
-    ]);
-}
+    {
+        $this->call([
+            RolSeeder::class,
+            UserSeeder::class,
+            CatalogoSeeder::class,    // ← primero catálogos
+            DoctorSeeder::class,      // ← después doctor
+            PacienteSeeder::class,    // ← después paciente
+        ]);
+    }
 }

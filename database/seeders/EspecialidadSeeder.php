@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
@@ -8,10 +9,21 @@ class EspecialidadSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('ctl_especialidad')->insert([
-            ['nombre' => 'Medicina General', 'estado' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['nombre' => 'Pediatría',        'estado' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['nombre' => 'Cardiología',      'estado' => true, 'created_at' => now(), 'updated_at' => now()],
-        ]);
+        $especialidades = [
+            ['nombre' => 'Medicina General', 'estado' => true],
+            ['nombre' => 'Pediatría',        'estado' => true],
+            ['nombre' => 'Cardiología',      'estado' => true],
+        ];
+
+        foreach ($especialidades as $especialidad) {
+            DB::table('ctl_especialidad')->updateOrInsert(
+                ['nombre' => $especialidad['nombre']], // Condición para buscar si ya existe
+                [
+                    'estado'     => $especialidad['estado'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            );
+        }
     }
 }
