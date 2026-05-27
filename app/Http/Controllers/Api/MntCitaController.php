@@ -8,16 +8,36 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
+
 class MntCitaController extends Controller
 {
     public function index()
-    {
+{
+    $user = request()->user()->load('rol');
+
+    // Si es doctor, solo ve sus propias citas
+    if ($user->rol->nombre === 'doctor') {
+        $doctor = \App\Models\MntDoctor::where('id_usuario', $user->id)->first();
+
+        if (!$doctor) {
+            return response()->json(['message' => 'No tienes un perfil de doctor asignado.'], 403);
+        }
+
         $citas = MntCita::with(['paciente', 'doctor', 'estadoCita'])
+            ->where('id_doctor', $doctor->id)
             ->orderBy('fecha_hora', 'desc')
             ->get();
 
         return response()->json(['data' => $citas]);
     }
+
+    // Admin y recepcionista ven todas las citas
+    $citas = MntCita::with(['paciente', 'doctor', 'estadoCita'])
+        ->orderBy('fecha_hora', 'desc')
+        ->get();
+
+    return response()->json(['data' => $citas]);
+}
 
     public function store(Request $request)
     {
@@ -89,23 +109,27 @@ class MntCitaController extends Controller
     }
 
     public function update(Request $request, $id)
-    {
-        $cita = MntCita::findOrFail($id);
+{
+    $cita = MntCita::findOrFail($id);
 
-        $request->validate([
-            'id_estado_cita' => 'nullable|exists:ctl_estado_cita,id',
-            'fecha_hora'     => 'sometimes|date',
-            'duracion_min'   => 'nullable|integer|min:10|max:180',
-            'motivo'         => 'nullable|string',
-            'notas'          => 'nullable|string',
-        ]);
 
-        $cita->update($request->only([
-            'id_estado_cita', 'fecha_hora', 'duracion_min', 'motivo', 'notas'
-        ]));
+    $request->validate([
+        'id_estado_cita' => 'nullable|exists:ctl_estado_cita,id',
+        'fecha_hora'     => 'sometimes|date',
+        'duracion_min'   => 'nullable|integer|min:10|max:180',
+        'motivo'         => 'nullable|string',
+        'notas'          => 'nullable|string',
+    ]);
 
-        return response()->json(['message' => 'Cita actualizada correctamente', 'data' => $cita]);
-    }
+    $cita->update($request->only([
+        'id_estado_cita', 'fecha_hora', 'duracion_min', 'motivo', 'notas'
+    ]));
+
+    return response()->json([
+        'message' => 'Cita actualizada correctamente',
+        'data'    => $cita->fresh()
+    ]);
+}
 
     public function destroy($id)
     {

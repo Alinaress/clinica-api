@@ -9,7 +9,7 @@ class MntPaciente extends Model
     protected $fillable = [
         'nombre', 'apellido', 'dui', 'id_genero',
         'id_grupo_sanguineo', 'fecha_nacimiento',
-        'alergias', 'estado', 'id_usuario'
+        'alergias','medicamentos_permanentes', 'estado', 'id_usuario'
     ];
 
     public function genero()

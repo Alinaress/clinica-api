@@ -18,6 +18,7 @@ class MntPacienteController extends Controller
         'id_grupo_sanguineo'=> 'nullable|exists:ctl_grupo_sanguineo,id',
         'fecha_nacimiento'  => 'nullable|date',
         'alergias'          => 'nullable|string',
+        'medicamentos_permanentes' => 'nullable|string',
         'email'             => 'required|email|unique:users,email',
         'password'          => 'required|string|min:6|confirmed',
         'nickname'          => 'required|string|max:50|unique:users,nickname',
@@ -85,6 +86,7 @@ class MntPacienteController extends Controller
             'id_grupo_sanguineo' => $request->id_grupo_sanguineo,
             'fecha_nacimiento'   => $request->fecha_nacimiento,
             'alergias'           => $request->alergias,
+            'medicamentos_permanentes'=> $request->medicamentos_permanentes,
             'estado'             => true,
             'id_usuario' => request()->user()->id,
         ]);
@@ -124,7 +126,7 @@ class MntPacienteController extends Controller
 
         $paciente->update($request->only([
             'nombre', 'apellido', 'dui', 'id_genero',
-            'id_grupo_sanguineo', 'fecha_nacimiento', 'alergias', 'estado'
+            'id_grupo_sanguineo', 'fecha_nacimiento', 'alergias', 'medicamentos_permanentes', 'estado'
         ]));
 
         return response()->json(['message' => 'Paciente actualizado correctamente', 'data' => $paciente]);

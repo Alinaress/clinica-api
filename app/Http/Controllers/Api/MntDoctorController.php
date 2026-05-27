@@ -9,7 +9,7 @@ class MntDoctorController extends Controller
 {
     public function index()
     {
-        $doctores = MntDoctor::with(['especialidad', 'usuario'])
+        $doctores = MntDoctor::with(['especialidad'])
             ->where('estado', true)
             ->orderBy('apellido')
             ->get();
