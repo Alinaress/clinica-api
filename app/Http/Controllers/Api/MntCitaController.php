@@ -134,7 +134,7 @@ class MntCitaController extends Controller
     public function destroy($id)
     {
         $cita = MntCita::findOrFail($id);
-        $cita->update(['id_estado_cita' => 5]); // 5 = cancelada
+        $cita->update(['id_estado_cita' => 5]); 
 
         return response()->json(['message' => 'Cita cancelada correctamente']);
     }
