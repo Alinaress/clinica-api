@@ -23,7 +23,6 @@ class MntDoctorController extends Controller
             'nombre'          => 'required|string|max:100',
             'apellido'        => 'required|string|max:100',
             'id_especialidad' => 'nullable|exists:ctl_especialidad,id',
-            'num_registro'    => 'nullable|string|max:50|unique:mnt_doctor,num_registro',
             'foto'            => 'nullable|string|max:255',
             'id_usuario'      => 'nullable|exists:users,id',
         ]);
@@ -32,7 +31,7 @@ class MntDoctorController extends Controller
             'nombre'          => $request->nombre,
             'apellido'        => $request->apellido,
             'id_especialidad' => $request->id_especialidad,
-            'num_registro'    => $request->num_registro,
+            'num_registro'    => 'MED-' . str_pad(MntDoctor::count() + 1, 3, '0', STR_PAD_LEFT),
             'foto'            => $request->foto,
             'estado'          => true,
             'id_usuario'      => $request->id_usuario,
